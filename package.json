@@ -1,0 +1,32 @@
+{
+  "name": "aran-remote",
+  "description": "Deploy local Aran advices on remote processes",
+  "version": "0.0.0",
+  "author": {
+    "name": "Laurent Christophe",
+    "email": "lachrist@vub.ac.be"
+  },
+  "dependencies": {
+    "antena": "1.1.1",
+    "aran": "2.3.0",
+    "astring": "1.3.0",
+    "melf": "1.0.3",
+    "melf-share": "0.0.2",
+    "otiluke": "^4.2.3"
+  },
+  "bin": {
+    "aran-remote-central-lite": "./central/lite/bin.js",
+    "aran-remote-central-reset": "./central/reset/bin.js",
+    "aran-remote-node": "./node/bin.js"
+  },
+  "repository": "lachrist/aran-remote",
+  "homepage": "http://github.com/lachrist/aran-remote",
+  "license": "MIT",
+  "main": "main.js",
+  "keywords": [
+    "Remote",
+    "Aran",
+    "Instrumentation",
+    "Distributed"
+  ]
+}
