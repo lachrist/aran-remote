@@ -5,7 +5,7 @@ const MelfServerHandlers = require("melf/server/handlers");
 
 let proxy = null;
 const options = Minimist(process.argv.slice(2));
-const handlers = MelfServerHandlers(options.log && console);
+const handlers = MelfServerHandlers();
 const server = Http.createServer();
 server.on("request", handlers.request);
 server.on("upgrade", handlers.upgrade);
@@ -21,7 +21,6 @@ server.listen(options["node-port"]||options["port"], () => {
     proxy.on("upgrade", handlers.upgrade);
     proxy.on("error", (error, location, target) => {
       console.log(error.message+" @"+location);
-      console.log(error.stack);
     });
     proxy.listen(options["browser-port"], () => {
       process.send(null);

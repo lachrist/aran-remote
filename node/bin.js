@@ -1,4 +1,10 @@
 #!/usr/bin/env node
-const OtilukeNode = require("otiluke/node");
 const Minimist = require("minimist");
-OtilukeNode(Path.join(__dirname, "virus.js"), Minimist(process.argv.slice(2)));
+const AranRemoteNode = require("./index.js");
+const options = Minimist(process.argv.slice(2));
+const command = options._;
+const antena_options = {host:options.host, secure:options.secure};
+delete options._;
+delete options.host;
+delete options.secure;
+AranRemoteNode(command, antena_options, options);

@@ -6,7 +6,7 @@ const Melf = require("melf");
 const MelfShare = require("melf-share")
 const TrapTypes = require("./trap-types.js");
 
-module.exports = (analysis, options, callback) => {
+module.exports = (remote_analysis, options, callback) => {
   const child = ChildProcess.fork(Path.join(__dirname, "child-melf-server.js"), [
     "--port", options["port"],
     "--node-port", options["node-port"],
@@ -21,7 +21,7 @@ module.exports = (analysis, options, callback) => {
       const share = MelfShare(melf, {sync:true});
       const aran = Aran();
       const remotes = {};
-      const make_remote = analysis(aran, share);
+      const make_remote = remote_analysis(aran, share);
       melf.rprocedures["aran-remote-initialize"] = (origin, data, callback) => {
         remotes[origin] = make_remote(share.instantiate(data[0]), data[1]);
         remotes[origin].pointcut = remotes[origin].pointcut || Object.keys(remotes[origin].advice).filter(islower);
@@ -42,23 +42,15 @@ module.exports = (analysis, options, callback) => {
       };
       Object.keys(TrapTypes).forEach((name) => {
         const hint = name === "begin" || "arrival" ? {} : "*";
-        // if (options.sync) {
-          melf.rprocedures["aran-remote-"+name] = (origin, data, callback) => {
-            try {
-              callback(null, share.serialize(advices[origin].advice[name].apply(null, share.instantiate(data, TrapTypes[name])), hint));
-            } catch (error) {
-              callback(error);
-            }
-          };
-        // } else {
-        //   melf.rprocedures["aran-remote-"+name] = (origin, data, callback) => {
-        //     advices[origin][name].apply(null, share.instantiate(data, TrapTypes[name])).catch(callback).then((result) => {
-        //       callback(null, share.serialize(result, hint));
-        //     });
-        //   };
-        // }
+        melf.rprocedures["aran-remote-"+name] = (origin, data, callback) => {
+          try {
+            callback(null, share.serialize(advices[origin].advice[name].apply(null, share.instantiate(data, TrapTypes[name])), hint));
+          } catch (error) {
+            callback(error);
+          }
+        };
       });
-      callback(null, share.ownerof);
+      callback(null);
     });
   });
 };
