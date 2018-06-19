@@ -1,4 +1,4 @@
-node ../bin.js --node-port 9000 --browser-port 8080 --ca ../../otiluke/browser/ca-home --url-search-prefix aran-remote-&
+node ../bin.js --remote-analysis ./remote-analysis.js --node-port 9000 --browser-port 8080 --ca-home ../../otiluke/browser/ca-home --url-search-prefix aran-remote-&
 REMOTE_PID=$!
 sleep 1
 node ../node/bin.js --host localhost:9000 --alias hello-world-node -- main.js arg0 arg1 &

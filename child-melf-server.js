@@ -29,8 +29,10 @@ server.listen(options["node-port"]||options["port"], () => {
     process.send(null);
   }
 });
-process.on("disconnet", () => {
+const cleanup = () => {
   server.close();
   proxy && proxy.close();
   process.exit(0);
-});
+};
+process.on("SIGINT", cleanup);
+process.on("SIGTERM", cleanup);

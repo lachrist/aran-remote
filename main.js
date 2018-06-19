@@ -1,10 +1,14 @@
 
 const Path = require("path");
-const Antena = require("antena/node");
+const Astring = require("astring");
 const ChildProcess = require("child_process");
+const Aran = require("aran");
+const Antena = require("antena/node");
 const Melf = require("melf");
 const MelfShare = require("melf-share")
 const TrapTypes = require("./trap-types.js");
+
+const islower = (string) => string.toLowerCase() === string;
 
 module.exports = (remote_analysis, options, callback) => {
   const child = ChildProcess.fork(Path.join(__dirname, "child-melf-server.js"), [
@@ -32,25 +36,24 @@ module.exports = (remote_analysis, options, callback) => {
         });
       };
       melf.rprocedures["aran-remote-transform"] = (origin, data, callback) => {
-        const estree = remotes[origin].parse(data[0]);
+        const estree = remotes[origin].parse(data[0], data[1]);
         if (estree) {
-          callback(null, Astring.generate(aran.weave(estree, remotes[origin].pointcut, /^https?\:\/\//.test(source) ? "global" : "node")));
+          callback(null, Astring.generate(aran.weave(estree, remotes[origin].pointcut, /^https?\:\/\//.test(data[1]) ? "global" : "node")));
         } else {
           callback(null, data[0]);
         }
-        callback(null, aran.weave(transform(data[0], data[1], advices[origin]));
       };
       Object.keys(TrapTypes).forEach((name) => {
-        const hint = name === "begin" || "arrival" ? {} : "*";
+        const hint = name === "begin" || name === "arrival" ? {} : "*";
         melf.rprocedures["aran-remote-"+name] = (origin, data, callback) => {
           try {
-            callback(null, share.serialize(advices[origin].advice[name].apply(null, share.instantiate(data, TrapTypes[name])), hint));
+            callback(null, share.serialize(remotes[origin].advice[name](...share.instantiate(data, TrapTypes[name])), hint));
           } catch (error) {
             callback(error);
           }
         };
       });
-      callback(null);
+      callback(null, child);
     });
   });
 };
