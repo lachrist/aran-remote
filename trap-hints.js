@@ -31,7 +31,7 @@ exports.regexp = ["regexp", "serial"];
 ///////////////
 exports.completion = ["value", "serial"];
 exports.declare = ["kind", "identifier", "value", "serial"];
-exports.eval = ["script", "serial"];
+// exports.eval = ["script", "serial"];
 exports.failure = [{}, "error", "serial"];
 exports.return = [{}, "result", "serial"];
 exports.save = ["string", "any", "serial"];

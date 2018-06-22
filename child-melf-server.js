@@ -1,19 +1,18 @@
 const Path = require("path");
 const Http = require("http");
-const Minimist = require("minimist");
 const MelfServerHandlers = require("melf/server/handlers");
 
 let proxy = null;
-const options = Minimist(process.argv.slice(2));
-const handlers = MelfServerHandlers();
+const options = JSON.parse(process.argv[2]);
+const handlers = MelfServerHandlers(options.log && console);
 const server = Http.createServer();
 server.on("request", handlers.request);
 server.on("upgrade", handlers.upgrade);
 server.listen(options["node-port"]||options["port"], () => {
   if ("browser-port" in options) {
     proxy = require("otiluke/browser/proxy")(Path.join(__dirname, "virus.js"), {
-      "ca-home": options["ca-home"] || Path.join(__dirname, "ca"),
-      "url-search-prefix": options["url-search-prefix"] || "aran-",
+      "ca-home": options["ca-home"],
+      "url-search-prefix": options["url-search-prefix"],
       "http-splitter": options["http-splitter"],
       "global-variable": options["global-variable"],
     });

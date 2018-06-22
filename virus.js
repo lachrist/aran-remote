@@ -1,24 +1,36 @@
 
 const Melf = require("melf");
 const MelfShare = require("melf-share");
-const TrapTypes = require("./trap-types.js");
+const TrapHints = require("./trap-hints.js");
 
 module.exports = (antena, options, callback) => {
   Melf(antena, options.alias, (error, melf) => {
     if (error)
       return callback(error);
-    const share = MelfShare(melf, {sync:true});
-    melf.rpcall("aran-remote", "aran-remote-initialize", [share.serialize(global), options], (error, data) => {
+    const share = MelfShare(melf, {synchronous:true});
+    melf.rpcall("aran-remote", "aran-remote-initialize", {global:share.serialize(global), options}, (error, data) => {
       if (error)
         return callback(error);
-      global[data.namespace] = {SANDBOX:share.instantiate(data.sandbox)};
-      Object.keys(TrapTypes).forEach((name) => {
+      const transform = (script, source) => melf.rpcall("aran-remote", "aran-remote-transform", {
+        script,
+        source,
+        scope: typeof source === "number" ? source : (antena.platform === "node" ? "node" : "global")
+      });
+      global[data.namespace] = {
+        SANDBOX:share.instantiate(data.sandbox),
+        eval: transform
+      };
+      Object.keys(TrapHints).forEach((name) => {
+        const hints = TrapHints[name];
         global[data.namespace][name] = function () {
-          return share.instantiate(melf.rpcall("aran-remote", "aran-remote-"+name, share.serialize(arguments, TrapTypes[name])));
+          const array = new Array(arguments.length);
+          for (let index = 0, length = arguments.length; index<length; index++)
+            array[index] = share.serialize(arguments[index], hints[index]);
+          return share.instantiate(melf.rpcall("aran-remote", "aran-remote-"+name, array));
         };
       });
       global.eval(data.setup);
-      callback(null, (script, source) => melf.rpcall("aran-remote", "aran-remote-transform", [script, source]));
+      callback(null, transform);
     });
   });
 };
