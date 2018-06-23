@@ -29,27 +29,44 @@ module.exports = (remote_analysis, options, callback) => {
           sandbox: share.serialize(remotes[origin].advice.SANDBOX)
         });
       };
-      melf.rprocedures["aran-remote-transform"] = (origin, {script, source, scope}, callback) => {
-        const estree = remotes[origin].parse(script, source);
-        if (estree) {
-          callback(null, Astring.generate(aran.weave(estree, remotes[origin].pointcut, {
-            scope: scope,
-            sandbox: Boolean("SANDBOX" in remotes[origin].advice)
-          })));
-        } else {
-          callback(null, script);
+      const transform = (origin, {script, source, scope}, callback) => {
+        try {
+          const estree = remotes[origin].parse(script, source);
+          if (estree) {
+            callback(null, Astring.generate(aran.weave(estree, remotes[origin].pointcut, {
+              scope: scope,
+              sandbox: "SANDBOX" in remotes[origin].advice
+            })));
+          } else {
+            callback(null, script);
+          }
+        } catch (error) {
+          callback(error);
         }
       };
-      Object.keys(TrapHints).forEach((name) => {
+      melf.rprocedures["aran-remote-transform"] = transform;
+      Object.keys(TrapHints).filter((name) => name !== "eval").forEach((name) => {
+        const hints = TrapHints[name];
         const hint = name === "begin" || name === "arrival" ? {} : "*";
-        melf.rprocedures["aran-remote-"+name] = (origin, data, callback) => {
-          try {
-            callback(null, share.serialize(remotes[origin].advice[name](...data.map(share.instantiate)), hint));
-          } catch (error) {
-            callback(error);
-          }
-        };
+        switch (hints.length) {
+          case 0: melf.rprocedures["aran-remote-"+name] = (origin, data, callback) => { try { callback(null, share.serialize(remotes[origin].advice[name](                                                                                    data[0]), hint)) } catch (error) { callback(error) } }; break;
+          case 1: melf.rprocedures["aran-remote-"+name] = (origin, data, callback) => { try { callback(null, share.serialize(remotes[origin].advice[name](share.instantiate(data[0]),                                                         data[1]), hint)) } catch (error) { callback(error) } }; break;
+          case 2: melf.rprocedures["aran-remote-"+name] = (origin, data, callback) => { try { callback(null, share.serialize(remotes[origin].advice[name](share.instantiate(data[0]), share.instantiate(data[1]),                             data[2]), hint)) } catch (error) { callback(error) } }; break;
+          case 3: melf.rprocedures["aran-remote-"+name] = (origin, data, callback) => { try { callback(null, share.serialize(remotes[origin].advice[name](share.instantiate(data[0]), share.instantiate(data[1]), share.instantiate(data[2]), data[3]), hint)) } catch (error) { callback(error) } }; break;
+          default: throw new Error("Invalid hints length: "+JSON.stringify(hints));
+        }
       });
+      melf.rprocedures["aran-remote-eval"] = (origin, [script, serial], callback) => {
+        transform(origin, {
+          script: String("eval" in remotes[origin].advice ?
+            remotes[origin].advice.eval(share.instantiate(script), serial) :
+            share.instantiate(script)),
+          source: serial,
+          scope: serial
+        }, (error, script) => {
+          callback(error, error ? null : share.serialize(script));
+        });
+      };
       callback(null, child);
     });
   });
