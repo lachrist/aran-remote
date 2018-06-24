@@ -8,6 +8,7 @@ const Melf = require("melf");
 const MelfShare = require("melf-share");
 const TrapHints = require("./trap-hints.js");
 
+const identity = (argument) => argument;
 const islower = (string) => string.toLowerCase() === string;
 
 module.exports = (remote_analysis, options, callback) => {
@@ -20,8 +21,22 @@ module.exports = (remote_analysis, options, callback) => {
       const aran = Aran();
       const remotes = {};
       const make_remote = remote_analysis(aran, share);
-      melf.rprocedures["aran-remote-initialize"] = (origin, {global, options}, callback) => {
+      const transform = (origin, {script, source, scope}) => {
+        const estree = remotes[origin].parse(script, source);
+        return estree ? Astring.generate(aran.weave(estree, remotes[origin].pointcut, {
+          scope: scope,
+          sandbox: "SANDBOX" in remotes[origin].advice
+        })) : script;
+      };
+      melf.rprocedures["aran-remote-initialize"] = (origin, [global, options], callback) => {
         remotes[origin] = make_remote(share.instantiate(global), options);
+        if ("eval" in remotes[origin]) {
+          remotes[origin].advice.eval = (script, serial) => transform(origin, {
+            script: remotes[origin].eval(script, serial),
+            source: serial,
+            scope: serial
+          });
+        }
         remotes[origin].pointcut = remotes[origin].pointcut || Object.keys(remotes[origin].advice).filter(islower);
         callback(null, {
           namespace: aran.namespace,
@@ -29,23 +44,14 @@ module.exports = (remote_analysis, options, callback) => {
           sandbox: share.serialize(remotes[origin].advice.SANDBOX)
         });
       };
-      const transform = (origin, {script, source, scope}, callback) => {
+      melf.rprocedures["aran-remote-transform"] = (origin, options, callback) => {
         try {
-          const estree = remotes[origin].parse(script, source);
-          if (estree) {
-            callback(null, Astring.generate(aran.weave(estree, remotes[origin].pointcut, {
-              scope: scope,
-              sandbox: "SANDBOX" in remotes[origin].advice
-            })));
-          } else {
-            callback(null, script);
-          }
+          callback(null, transform(origin, options));
         } catch (error) {
           callback(error);
         }
       };
-      melf.rprocedures["aran-remote-transform"] = transform;
-      Object.keys(TrapHints).filter((name) => name !== "eval").forEach((name) => {
+      Object.keys(TrapHints).forEach((name) => {
         const hints = TrapHints[name];
         const hint = name === "begin" || name === "arrival" ? {} : "*";
         switch (hints.length) {
@@ -56,17 +62,6 @@ module.exports = (remote_analysis, options, callback) => {
           default: throw new Error("Invalid hints length: "+JSON.stringify(hints));
         }
       });
-      melf.rprocedures["aran-remote-eval"] = (origin, [script, serial], callback) => {
-        transform(origin, {
-          script: String("eval" in remotes[origin].advice ?
-            remotes[origin].advice.eval(share.instantiate(script), serial) :
-            share.instantiate(script)),
-          source: serial,
-          scope: serial
-        }, (error, script) => {
-          callback(error, error ? null : share.serialize(script));
-        });
-      };
       callback(null, child);
     });
   });

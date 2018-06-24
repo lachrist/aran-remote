@@ -17,11 +17,8 @@ module.exports = (aran, share) => {
     }
   };
   const access = AranAccess(membrane);
-  access.advice.eval = ($$script, serial) => {
-    console.log($$script);
-    return access.release(membrane.leave($$script));
-  };
   return (global, options) => ({
+    eval: ($$script, serial) => access.release(membrane.leave($$script)),
     parse: (script, source) => Acorn.parse(script),
     advice: access.advice 
   });

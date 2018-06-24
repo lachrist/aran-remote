@@ -1,7 +1,7 @@
 const Acorn = require("acorn");
 module.exports = (aran, share) => {
   let counter = 0;
-  return (global, options, platform) => ({
+  return (global, options) => ({
     parse: (script, source) => {
       if (source.endsWith("/hello.js")) {
         const estree = Acorn.parse(script, {locations:true});
