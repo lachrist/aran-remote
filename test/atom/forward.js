@@ -1,6 +1,6 @@
 const Acorn = require("acorn");
 
-module.exports = (aran, share) => (global, options) => {
+module.exports = ({aran, share}) => ({global, argm, transform}) => {
 
   const ADVICE = {};
 
@@ -23,7 +23,7 @@ module.exports = (aran, share) => (global, options) => {
     "test",
     "throw",
     "return",
-    // "eval",
+    "eval",
     "begin",
     "with",
     "write",
@@ -84,10 +84,6 @@ module.exports = (aran, share) => (global, options) => {
   ///////////
 
   return {
-    eval: (script, serial) => {
-      console.log("eval "+print(script)+" "+serial);
-      return script;
-    },
     parse: (script, source) => Acorn.parse(script),
     advice: ADVICE
   };

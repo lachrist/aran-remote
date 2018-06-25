@@ -2,7 +2,7 @@
 const Acorn = require("acorn");
 const AranAccess = require("aran-access");
 
-module.exports = (aran, share) => {
+module.exports = ({aran, share}) => {
   const wrappers = new WeakSet();
   const membrane = {
     enter: (value) => {
@@ -17,9 +17,10 @@ module.exports = (aran, share) => {
     }
   };
   const access = AranAccess(membrane);
-  return (global, options) => ({
-    eval: ($$script, serial) => access.release(membrane.leave($$script)),
+  return ({global, argm, transform}) => ({
     parse: (script, source) => Acorn.parse(script),
-    advice: access.advice 
+    advice: Object.assign({}, access.advice, {
+      eval: (script, serial) => transform(access.release(membrane.leave(script)), serial)
+    })
   });
 };

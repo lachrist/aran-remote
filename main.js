@@ -20,33 +20,34 @@ module.exports = (remote_analysis, options, callback) => {
       const share = MelfShare(melf, {synchronous:true});
       const aran = Aran();
       const remotes = {};
-      const make_remote = remote_analysis(aran, share);
-      const transform = (origin, {script, source, scope}) => {
-        const estree = remotes[origin].parse(script, source);
-        return estree ? Astring.generate(aran.weave(estree, remotes[origin].pointcut, {
-          scope: scope,
-          sandbox: "SANDBOX" in remotes[origin].advice
-        })) : script;
-      };
-      melf.rprocedures["aran-remote-initialize"] = (origin, [global, options], callback) => {
-        remotes[origin] = make_remote(share.instantiate(global), options);
-        if ("eval" in remotes[origin]) {
-          remotes[origin].advice.eval = (script, serial) => transform(origin, {
-            script: remotes[origin].eval(script, serial),
-            source: serial,
-            scope: serial
-          });
-        }
-        remotes[origin].pointcut = remotes[origin].pointcut || Object.keys(remotes[origin].advice).filter(islower);
+      const make_remote = remote_analysis({aran, share});
+      melf.rprocedures["aran-remote-initialize"] = (origin, {global, argm, platform}, callback) => {
+        const transform = (script, source) => {
+          const estree = remote.parse(script, source);
+          return estree ? Astring.generate(aran.weave(estree, remote.pointcut, {
+            scope: (
+              typeof source === "number" ?
+              source :
+              (
+                typeof source === "string" && platform === "node" ?
+                ["this", "__dirname", "__filename", "require", "module", "exports"] :
+                ["this"])),
+            sandbox: "SANDBOX" in remote.advice
+          })) : script;
+        };
+        const remote = make_remote({global:share.instantiate(global), argm, transform});
+        remote.pointcut = remote.pointcut || Object.keys(remote.advice).filter(islower);
+        remote.transform = transform;
+        remotes[origin] = remote;
         callback(null, {
           namespace: aran.namespace,
           setup: Astring.generate(aran.setup()),
-          sandbox: share.serialize(remotes[origin].advice.SANDBOX)
+          sandbox: share.serialize(remote.advice.SANDBOX)
         });
       };
-      melf.rprocedures["aran-remote-transform"] = (origin, options, callback) => {
+      melf.rprocedures["aran-remote-transform"] = (origin, {script, source}, callback) => {
         try {
-          callback(null, transform(origin, options));
+          callback(null, remotes[origin].transform(script, source));
         } catch (error) {
           callback(error);
         }

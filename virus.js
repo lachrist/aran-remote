@@ -3,12 +3,12 @@ const Melf = require("melf");
 const MelfShare = require("melf-share");
 const TrapHints = require("./trap-hints.js");
 
-module.exports = (antena, options, callback) => {
-  Melf(antena, options.alias, (error, melf) => {
+module.exports = (antena, argm, callback) => {
+  Melf(antena, argm.alias, (error, melf) => {
     if (error)
       return callback(error);
     const share = MelfShare(melf, {synchronous:true});
-    melf.rpcall("aran-remote", "aran-remote-initialize", [share.serialize(global), options], (error, data) => {
+    melf.rpcall("aran-remote", "aran-remote-initialize", {global:share.serialize(global), argm, platform:antena.platform}, (error, data) => {
       if (error)
         return callback(error);
       global[data.namespace] = {SANDBOX:share.instantiate(data.sandbox)};
@@ -24,11 +24,7 @@ module.exports = (antena, options, callback) => {
         }
       });
       global.eval(data.setup);
-      callback(null, (script, source) => melf.rpcall("aran-remote", "aran-remote-transform", {
-        script,
-        source,
-        scope: typeof source === "number" ? source : (antena.platform === "node" ? "node" : "global")
-      }));
+      callback(null, (script, source) => melf.rpcall("aran-remote", "aran-remote-transform", {script, source}));
     });
   });
 };
