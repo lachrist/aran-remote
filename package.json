@@ -1,21 +1,21 @@
 {
   "name": "aran-remote",
   "description": "Deploy local Aran advices on remote processes",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": {
     "name": "Laurent Christophe",
     "email": "lachrist@vub.ac.be"
   },
   "devDependencies": {
     "acorn": "^5.7.1",
-    "aran-access": "^0.1.4"
+    "aran-access": "0.1.5"
   },
   "dependencies": {
     "antena": "1.2.1",
     "aran": "2.3.0",
     "astring": "^1.3.0",
     "melf": "1.0.12",
-    "melf-share": "0.0.6",
+    "melf-share": "0.0.7",
     "otiluke": "4.3.6"
   },
   "bin": {
