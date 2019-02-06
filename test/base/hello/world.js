@@ -1,1 +1,0 @@
-console.log("W"+"o"+"r"+"l"+"d");

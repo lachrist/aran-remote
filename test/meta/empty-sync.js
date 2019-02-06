@@ -1,21 +1,19 @@
 
 const Acorn = require("acorn");
-const AranRemote = require("aran-rempte");
+const AranRemote = require("../../lib/main.js");
 const Astring = require("astring");
 
-const aran = AranRemote(({global, alias, argm}) => {
-  console.log("Begin: "+alias);
-  return {transform, advice};
-}, {
-  "node-port": 8000,
-  "browser-port": 8080
+const aran = AranRemote(({global, alias, argm}) => ({transform, advice}), {
+  "node-port": process.argv[2],
+  "browser-port": process.argv[3],
+  "synchronous": true
 });
 
 const pointcut = (name, node) => name === "eval";
 
 const transform = (script, source) => {
   const serial = typeof source === "number" ? source : null;
-  const estree1 = Acorn.parse(script1);
+  const estree1 = Acorn.parse(script);
   const estree2 = aran.weave(estree1, pointcut, serial);
   return Astring.generate(estree2);
 };

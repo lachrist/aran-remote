@@ -1,15 +1,13 @@
 
 const Acorn = require("acorn");
-const AranRemote = require("aran-rempte");
+const AranRemote = require("../../lib/main.js");
 const Astring = require("astring");
 
-const aran = await AranRemote(async ({global, alias, argm}) => {
-  console.log("Begin: "+alias);
-  return {transform, advice};
-}, {
-  "node-port": 8000,
-  "browser-port": 8080
-});
+let aran; AranRemote(async ({global, alias, argm}) => ({transform, advice}), {
+  "node-port": process.argv[2],
+  "browser-port": process.argv[3],
+  "synchronous": false
+}).then((result) => { aran = result }, (error) => { console.log(error) });
 
 const pointcut = (name, node) => name === "eval";
 

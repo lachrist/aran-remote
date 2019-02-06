@@ -133,31 +133,31 @@ if (y !== 1)
 // DeclarationFor.js
 console.log("DeclarationFor.js");
 (function () {
-(function () {
-  for (var i=0; i<3; i++) {}
-  if (i !== 3)
-    throw new Error("DeclarationFor");
-} ());
+let sum = 0;
+for (let i=0; i<4; i++)
+  sum = sum + i;
+if (sum !== 6)
+  throw new Error("DeclarationFor");
 } ());
 
 // DeclarationForIn.js
 console.log("DeclarationForIn.js");
 (function () {
-(function () {
-  for (var k in {a:1}) {}
-  if (k !== "a")
-    throw new Error("DeclarationForIn");
-} ());
+let sum = "";
+for (let k in {a:1,b:2,c:3})
+  sum = sum + k;
+if (sum !== "abc")
+  throw new Error("DeclarationForIn");
 } ());
 
 // DeclarationForOf.js
 console.log("DeclarationForOf.js");
 (function () {
-(function () {
-  for (var x of ["foo"]) {}
-  if (x !== "foo")
-    throw new Error("ForOf");
-} ());
+let sum = "";
+for (let x of ["a", "b", "c"])
+  sum = sum + x;
+if (sum !== "abc")
+  throw new Error("ForOf");
 } ());
 
 // Definition.js
@@ -607,6 +607,54 @@ if(i !== 2)
   throw new Error("Switch3");
 } ());
 
+// TaggedTemplateExpression.js
+console.log("TaggedTemplateExpression.js");
+(function () {
+
+function f () {
+  "use strict";
+  if (this !== void 0)
+    throw new Error("TaggedTemplateExpression1");
+  if (arguments.length !== 2)
+    throw new Error("TaggedTemplateExpression2");
+  if (!Array.isArray(arguments[0]))
+    throw new Error("TaggedTemplateExpression3");
+  if (Reflect.isExtensible(arguments[0]))
+    throw new Error("TaggedTemplateExpression4");
+  if (arguments[0].length !== 2)
+    throw new Error("TaggedTemplateExpression5");
+  if (arguments[0][0] !== "foo")
+    throw new Error("TaggedTemplateExpression6");
+  if (arguments[0][1] !== "bar")
+    throw new Error("TaggedTemplateExpression7");
+  if (!Array.isArray(arguments[0].raw))
+    throw new Error("TaggedTemplateExpression8");
+  if (Reflect.isExtensible(arguments[0].raw))
+    throw new Error("TaggedTemplateExpression9");
+  if (arguments[0].raw.length !== 2)
+    throw new Error("TaggedTemplateExpression10");
+  if (arguments[0].raw[0] !== "foo")
+    throw new Error("TaggedTemplateExpression11");
+  if (arguments[0].raw[1] !== "bar")
+    throw new Error("TaggedTemplateExpression12");
+  if (arguments[1] !== 123)
+    throw new Error("TaggedTemplateExpression13");
+  return "abc";
+};
+
+if (f `foo${123}bar` !== "abc")
+  throw new Error("TaggedTemplateExpression14");
+
+} ());
+
+// TemplateLiteral.js
+console.log("TemplateLiteral.js");
+(function () {
+if (`foo${"bar"}qux` !== "foobarqux")
+  throw new Error("Template1");
+
+} ());
+
 // This.js
 console.log("This.js");
 (function () {
@@ -679,4 +727,4 @@ if (o.a !== 2)
 
 // EXIT
 console.log('\n\nSuccess!\n\n');
-process.exit(0);
+typeof process !== 'undefined' && process.exit(0);
