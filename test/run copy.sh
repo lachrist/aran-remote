@@ -1,7 +1,7 @@
 node ../../bin.js --remote-analysis ./remote-analysis.js --node-port 9000 --browser-port 8080 --ca-home ../../../otiluke/browser/ca-home &
 REMOTE_PID=$!
 sleep 1
-node ../../node/bin.js --host localhost:9000 --alias hello-world-node -- main.js arg0 arg1 &
+node ../../node/bin.js --host 9000 --alias hello-world-node -- main.js arg0 arg1 &
 http-server -p 8000 &
 SERVER_PID=$!
 sleep 1

@@ -1,4 +1,5 @@
 // Arguments.js
+console.log("Arguments.js");
 (function () {
 let f = function () {
   if (arguments[0] !== "foo")
@@ -12,12 +13,14 @@ f("foo", "bar");
 } ());
 
 // Array.js
+console.log("Array.js");
 (function () {
 if ([1,2,3][0] !== 1)
   throw new Error("Array");
 } ());
 
 // Arrow.js
+console.log("Arrow.js");
 (function () {
 let a1 = () => "foo";
 let a2 = () => { return "bar" };
@@ -36,12 +39,14 @@ if (!check)
 } ());
 
 // Binary.js
+console.log("Binary.js");
 (function () {
 if (1+2 !== 3)
   throw new Error("Binary");
 } ());
 
 // Block.js
+console.log("Block.js");
 (function () {
 (function () {
   {let x = 1}
@@ -54,6 +59,7 @@ if (1+2 !== 3)
 } ());
 
 // Break.js
+console.log("Break.js");
 (function () {
 a:{
   break a;
@@ -66,12 +72,14 @@ while (true) {
 } ());
 
 // Call.js
+console.log("Call.js");
 (function () {
 if ((() => 1)() !== 1)
   throw new Error("Call");
 } ());
 
 // Conditional.js
+console.log("Conditional.js");
 (function () {
 if ((true?1:2) !== 1)
   throw new Error("Conditional1");
@@ -80,6 +88,7 @@ if ((false?1:2) !== 2)
 } ());
 
 // Const.js
+console.log("Const.js");
 (function () {
 {
   const c = "foo";
@@ -95,6 +104,7 @@ if (typeof c !== "undefined")
 } ());
 
 // Continue.js
+console.log("Continue.js");
 (function () {
 let x = true;
 while (x) {
@@ -111,6 +121,7 @@ a : while (y) {
 } ());
 
 // Declaration.js
+console.log("Declaration.js");
 (function () {
 let x, y = 1;
 if (x !== undefined)
@@ -120,6 +131,7 @@ if (y !== 1)
 } ());
 
 // DeclarationFor.js
+console.log("DeclarationFor.js");
 (function () {
 (function () {
   for (var i=0; i<3; i++) {}
@@ -129,6 +141,7 @@ if (y !== 1)
 } ());
 
 // DeclarationForIn.js
+console.log("DeclarationForIn.js");
 (function () {
 (function () {
   for (var k in {a:1}) {}
@@ -138,6 +151,7 @@ if (y !== 1)
 } ());
 
 // DeclarationForOf.js
+console.log("DeclarationForOf.js");
 (function () {
 (function () {
   for (var x of ["foo"]) {}
@@ -147,6 +161,7 @@ if (y !== 1)
 } ());
 
 // Definition.js
+console.log("Definition.js");
 (function () {
 (function () {
   f();
@@ -155,6 +170,7 @@ if (y !== 1)
 } ());
 
 // DoWhile.js
+console.log("DoWhile.js");
 (function () {
 let i = 0;
 do {
@@ -165,11 +181,13 @@ if (i !== 3)
 } ());
 
 // Empty.js
+console.log("Empty.js");
 (function () {
 ;
 } ());
 
 // EvalCall.js
+console.log("EvalCall.js");
 (function () {
 let x = 1;
 if (eval("x") !== 1)
@@ -177,11 +195,13 @@ if (eval("x") !== 1)
 } ());
 
 // Expression.js
+console.log("Expression.js");
 (function () {
 "foo";
 } ());
 
 // For.js
+console.log("For.js");
 (function () {
 let i;
 for (i=0; i<3; i++) {}
@@ -190,6 +210,7 @@ if (i !== 3)
 } ());
 
 // ForIn.js
+console.log("ForIn.js");
 (function () {
 let k;
 for (k in {a:1}) {}
@@ -198,6 +219,7 @@ if (k !== "a")
 } ());
 
 // ForOf.js
+console.log("ForOf.js");
 (function () {
 let x;
 for (x of ["foo"]) {}
@@ -206,6 +228,7 @@ if (x !== "foo")
 } ());
 
 // Function.js
+console.log("Function.js");
 (function () {
 let f = function () { return 1 }
 if (f() !== 1)
@@ -213,6 +236,7 @@ if (f() !== 1)
 } ());
 
 // Identifier.js
+console.log("Identifier.js");
 (function () {
 let x = 1;
 if (x !== 1)
@@ -220,6 +244,7 @@ if (x !== 1)
 } ());
 
 // IdentifierAssignment.js
+console.log("IdentifierAssignment.js");
 (function () {
 let x;
 x = 1;
@@ -231,6 +256,7 @@ if (x !== 3)
 } ());
 
 // IdentifierDelete.js
+console.log("IdentifierDelete.js");
 (function () {
 let o = {a:1};
 let x;
@@ -247,6 +273,7 @@ if ("a" in o)
 } ());
 
 // IdentifierForIn.js
+console.log("IdentifierForIn.js");
 (function () {
 let k;
 for (k in {a:1}) {}
@@ -255,6 +282,7 @@ if (k !== "a")
 } ());
 
 // IdentifierTypeof.js
+console.log("IdentifierTypeof.js");
 (function () {
 if (typeof 1 !== "number")
   throw new Error("Typeof2");
@@ -263,6 +291,7 @@ if (typeof UndefinedVariable !== "undefined")
 } ());
 
 // IdentifierUpdate.js
+console.log("IdentifierUpdate.js");
 (function () {
 let x = 1;
 if (x++ !== 1)
@@ -272,6 +301,7 @@ if (++x !== 3)
 } ());
 
 // If.js
+console.log("If.js");
 (function () {
 if (true) {} else {
   throw new Error("If1");
@@ -282,6 +312,7 @@ if (false) {
 } ());
 
 // Label.js
+console.log("Label.js");
 (function () {
 a:{
   break a;
@@ -290,6 +321,7 @@ a:{
 } ());
 
 // Let.js
+console.log("Let.js");
 (function () {
 {
   let l = "foo";
@@ -302,6 +334,7 @@ if (typeof l !== "undefined")
 } ());
 
 // Literal.js
+console.log("Literal.js");
 (function () {
 true;
 false;
@@ -312,6 +345,7 @@ false;
 } ());
 
 // Logical.js
+console.log("Logical.js");
 (function () {
 if ((false||1) !== 1)
   throw new Error("Logical1");
@@ -320,6 +354,7 @@ if ((true&&1) !== 1)
 } ());
 
 // LoopLabel.js
+console.log("LoopLabel.js");
 (function () {
 let i = 0;
 a: for (; i<10; i++) {
@@ -331,6 +366,7 @@ if (i !== 5)
 } ());
 
 // Member.js
+console.log("Member.js");
 (function () {
 if ({a:1}.a !== 1)
   throw new Error("Member");
@@ -338,6 +374,7 @@ if ({a:1}.a !== 1)
 } ());
 
 // MemberAssignment.js
+console.log("MemberAssignment.js");
 (function () {
 let o = {};
 o.a = 1;
@@ -349,6 +386,7 @@ if (o.a !== 3)
 } ());
 
 // MemberCall.js
+console.log("MemberCall.js");
 (function () {
 let o = {
   f: function () {
@@ -360,6 +398,7 @@ o.f();
 } ());
 
 // MemberDelete.js
+console.log("MemberDelete.js");
 (function () {
 let o = {a:1};
 delete o.a;
@@ -368,6 +407,7 @@ if ("a" in o)
 } ());
 
 // MemberForIn.js
+console.log("MemberForIn.js");
 (function () {
 let o = {};
 for (o.a in {a:1}) {}
@@ -376,6 +416,7 @@ if (o.a !== "a")
 } ());
 
 // MemberForOf.js
+console.log("MemberForOf.js");
 (function () {
 let o = {};
 for (o.a of ["foo"]) {}
@@ -384,6 +425,7 @@ if (o.a !== "foo")
 } ());
 
 // MemberUpdate.js
+console.log("MemberUpdate.js");
 (function () {
 let o = {a:1};
 if (o.a++ !== 1)
@@ -393,6 +435,7 @@ if (++o.a !== 3)
 } ());
 
 // New.js
+console.log("New.js");
 (function () {
 let o = {};
 let F = function () { return o }
@@ -402,6 +445,7 @@ if (new F() !== o)
 } ());
 
 // NewTarget.js
+console.log("NewTarget.js");
 (function () {
 let f1 = function () {
   if (new.target !== void 0)
@@ -416,6 +460,7 @@ new f2();
 } ());
 
 // Object.js
+console.log("Object.js");
 (function () {
 let b = "b";
 let o = {
@@ -434,6 +479,7 @@ if (o.c !== 3)
 } ());
 
 // PatternArray.js
+console.log("PatternArray.js");
 (function () {
 let [x1,x2] = ["foo1", "bar1"];
 if (x1 !== "foo1")
@@ -452,6 +498,7 @@ if (ys[1] !== "qux2")
 } ());
 
 // PatternDefault.js
+console.log("PatternDefault.js");
 (function () {
 let [x="foo", y="bar"] = [undefined, null];
 if (x !== "foo")
@@ -461,6 +508,7 @@ if (y !== null)
 } ());
 
 // PatternObject.js
+console.log("PatternObject.js");
 (function () {
 let {x, y:z} = {x:"foo", y:"bar"};
 if (x !== "foo")
@@ -470,6 +518,7 @@ if (z !== "bar")
 } ());
 
 // Rest.js
+console.log("Rest.js");
 (function () {
 let f = function (x, ...xs) {
   if (x !== "foo")
@@ -483,6 +532,7 @@ f("foo", "bar", "qux");
 } ());
 
 // Return.js
+console.log("Return.js");
 (function () {
 let f = function () {
   return;
@@ -493,12 +543,14 @@ if (f() !== undefined)
 } ());
 
 // Sequence.js
+console.log("Sequence.js");
 (function () {
 if ((1,2) !== 2)
   throw new Error("Sequence");
 } ());
 
 // Spread.js
+console.log("Spread.js");
 (function () {
 let f = function (x, y, z, t) {
   if (x !== 1)
@@ -516,6 +568,7 @@ f (1, ...[2,3], 4);
 } ());
 
 // StrictFunction.js
+console.log("StrictFunction.js");
 (function () {
 (function () {
   "use strict";
@@ -528,6 +581,7 @@ f (1, ...[2,3], 4);
 } ());
 
 // StrictProgram.js
+console.log("StrictProgram.js");
 (function () {
 "use strict";
 let f = function () {
@@ -538,6 +592,7 @@ f();
 } ());
 
 // Switch.js
+console.log("Switch.js");
 (function () {
 let i=0;
 switch (2) {
@@ -553,6 +608,7 @@ if(i !== 2)
 } ());
 
 // This.js
+console.log("This.js");
 (function () {
 let o = {
   f:function () {
@@ -564,6 +620,7 @@ o.f();
 } ());
 
 // Throw.js
+console.log("Throw.js");
 (function () {
 let c = false;
 let f = false;
@@ -582,6 +639,7 @@ if (!f)
 } ());
 
 // Unary.js
+console.log("Unary.js");
 (function () {
 if (!true)
   throw new Error("Unary1");
@@ -595,6 +653,7 @@ if ("b" in o)
 } ());
 
 // While.js
+console.log("While.js");
 (function () {
 let i = 0;
 while (i < 3)
@@ -604,6 +663,7 @@ if (i !== 3)
 } ());
 
 // With.js
+console.log("With.js");
 (function () {
 let o = {a:1};
 with (o) {
