@@ -1,13 +1,12 @@
 
+const Minimist = require("minimist");
 const Acorn = require("acorn");
 const AranRemote = require("../../lib/main.js");
 const Astring = require("astring");
 
-let aran; AranRemote(async ({global, alias, argm}) => ({transform, advice}), {
-  "node-port": process.argv[2],
-  "browser-port": process.argv[3],
-  "synchronous": false
-}).then((result) => { aran = result }, (error) => { console.log(error) });
+const options = Object.assign(Minimist(process.argv.slice(2)), {synchronous:false});
+
+let aran; AranRemote(async ({global, alias, argm}) => ({transform, advice}), options).then((result) => { aran = result });
 
 const pointcut = (name, node) => true;
 
