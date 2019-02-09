@@ -11,6 +11,8 @@ const pointcut = (name, node) => name in advice;
 const options = Object.assign(Minimist(process.argv.slice(2)), {synchronous:true});
 
 const aran = AranRemote(({global, argm, alias}) => ({advice, transform}), options);
+process.on("SIGINT", () => { aran.child.kill("SIGINT") });
+process.on("SIGTERM", () => { aran.child.kill("SIGTERM") });
 
 const transform = (script, source) => {
   const serial = typeof source === "number" ? source : null;

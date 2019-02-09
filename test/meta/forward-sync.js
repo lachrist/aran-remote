@@ -7,6 +7,8 @@ const Astring = require("astring");
 const options = Object.assign(Minimist(process.argv.slice(2)), {synchronous:true});
 
 const aran = AranRemote(({global, alias, argm}) => ({transform, advice}), options);
+process.on("SIGINT", () => { aran.child.kill("SIGINT") });
+process.on("SIGTERM", () => { aran.child.kill("SIGTERM") });
 
 const pointcut = (name, node) => true;
 

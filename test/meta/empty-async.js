@@ -6,7 +6,7 @@ const Astring = require("astring");
 
 const options = Object.assign(Minimist(process.argv.slice(2)), {synchronous:false});
 
-let aran; AranRemote(async ({global, alias, argm}) => ({transform, advice}), options).then((result) => { aran = result });
+let aran;    AranRemote(async ({global, alias, argm}) => ({transform, advice}), options).then((result) => { aran = result });
 
 const pointcut = (name, node) => name === "eval";
 
