@@ -6,15 +6,19 @@ const Astring = require("astring");
 
 const options = Object.assign(Minimist(process.argv.slice(2)), {synchronous:true });
 
-const aran = AranRemote(      ({global, alias, argm}) => ({transform, advice}), options); process.on("SIGINT", () => { aran.child.kill("SIGINT") }); process.on("SIGTERM", () => { aran.child.kill("SIGTERM") });
-
-const pointcut = (name, node) => name === "eval";
-
-const transform =       (script, source) => {
-  const serial = typeof source === "number" ? source : null;
-  const estree1 = Acorn.parse(script);
-  const estree2 = aran.weave(estree1, pointcut, serial);
-  return Astring.generate(estree2);
-};
-
-const advice = {eval:transform};
+AranRemote(options, (error, aran) => {
+  if (error)
+    throw error;
+  const pointcut = (name, node) => name === "eval";
+  const transform = (script, source) => {
+    const serial = typeof source === "number" ? source : null;
+    const estree1 = Acorn.parse(script);
+    const estree2 = aran.weave(estree1, pointcut, serial);
+    return Astring.generate(estree2);
+  };
+  const advice = {
+    __proto__: null,
+    eval:       (script, serial) => transform(      aran.share.reflect.binary("+", "", script), serial),
+  };
+  return ({global, alias, argm}) => ({transform, advice});
+});

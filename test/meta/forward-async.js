@@ -6,53 +6,52 @@ const Astring = require("astring");
 
 const options = Object.assign(Minimist(process.argv.slice(2)), {synchronous:false});
 
-let aran; AranRemote(async ({global, alias, argm}) => ({transform, advice}), options).then((result) => { aran = result });
+AranRemote(options, (error, aran) => {
+  if (error)
+    throw error;
+  const pointcut = (name, node) => true;
+  const transform = (script, source) => {
+    const serial = typeof source === "number" ? source : null;
+    const estree1 = Acorn.parse(script);
+    const estree2 = aran.weave(estree1, pointcut, serial);
+    return Astring.generate(estree2);
+  };
+  const noop = async () => {};
+  const identity = async (arg0) => arg0;
+  const advice = {__proto__:null};
+  // Informers //
+  [
+    "program",
+    "arrival",
+    "enter",
+    "leave",
+    "continue",
+    "break",
+    "debugger"
+  ].forEach((key) => { advice[key] = noop });
+  // Transformers //
+  [
+    "error",
+    "abrupt",
+    "throw",
+    "return",
+    "closure",
+    "builtin",
+    "primitive",
+    "read",
+    "argument",
+    "drop",
+    "test",
+    "write",
+    "success",
+    "failure"
+  ].forEach((key) => { advice[key] = identity });
+  advice.eval = async (script, serial) => transform(await aran.share.reflect.binary("+", "", script), serial);
+  // Combiners //
+  advice.construct = async (c, xs, s) => await aran.share.reflect.construct(c, xs);
+  advice.apply = async (f, t, xs, s) => await aran.share.reflect.apply(f, t, xs);
+  advice.unary = async (o, x) => await aran.share.reflect.unary(o, x);
+  advice.binary = async (o, x1, x2) => await aran.share.reflect.binary(o, x1, x2);
+  return ({global, alias, argm}) => ({transform, advice});
+});
 
-const pointcut = (name, node) => true;
-
-const transform = async (script, source) => {
-  const serial = typeof source === "number" ? source : null;
-  const estree1 = Acorn.parse(script);
-  const estree2 = aran.weave(estree1, pointcut, serial);
-  return Astring.generate(estree2);
-};
-
-const noop = async () => {};
-const identity = async (arg0) => arg0;
-const advice = {};
-
-// Informers //
-[
-  "program",
-  "arrival",
-  "enter",
-  "leave",
-  "continue",
-  "break",
-  "debugger"
-].forEach((key) => { advice[key] = noop });
-
-// Transformers //
-[
-  "error",
-  "abrupt",
-  "throw",
-  "return",
-  "closure",
-  "builtin",
-  "primitive",
-  "read",
-  "argument",
-  "drop",
-  "test",
-  "write",
-  "success",
-  "failure"
-].forEach((key) => { advice[key] = identity });
-advice.eval = transform;
-
-// Combiners //
-advice.construct = (c, xs, s) => aran.construct(c, xs);
-advice.apply = (f, t, xs, s) => aran.apply(f, t, xs);
-advice.unary = (o, x) => aran.unary(o, x);
-advice.binary = (o, x1, x2) => aran.binary(o, x1, x2);
