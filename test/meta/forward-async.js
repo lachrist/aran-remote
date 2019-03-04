@@ -46,12 +46,12 @@ AranRemote(options, (error, aran) => {
     "success",
     "failure"
   ].forEach((key) => { advice[key] = identity });
-  advice.eval = async (script, serial) => transform(await aran.share.reflect.binary("+", "", script), serial);
+  advice.eval = async (script, serial) => transform(await aran.reflect.binary("+", "", script), serial);
   // Combiners //
-  advice.construct = async (c, xs, s) => await aran.share.reflect.construct(c, xs);
-  advice.apply = async (f, t, xs, s) => await aran.share.reflect.apply(f, t, xs);
-  advice.unary = async (o, x) => await aran.share.reflect.unary(o, x);
-  advice.binary = async (o, x1, x2) => await aran.share.reflect.binary(o, x1, x2);
+  advice.construct = async (c, xs, s) => await aran.reflect.construct(c, xs);
+  advice.apply = async (f, t, xs, s) => await aran.reflect.apply(f, t, xs);
+  advice.unary = async (o, x) => await aran.reflect.unary(o, x);
+  advice.binary = async (o, x1, x2) => await aran.reflect.binary(o, x1, x2);
   return ({global, alias, argm}) => ({transform, advice});
 });
 

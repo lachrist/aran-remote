@@ -18,7 +18,7 @@ AranRemote(options, (error, aran) => {
   };
   const advice = {
     __proto__: null,
-    eval:       (script, serial) => transform(      aran.share.reflect.binary("+", "", script), serial),
+    eval:       (script, serial) => transform(      aran.reflect.binary("+", "", script), serial),
   };
   return ({global, alias, argm}) => ({transform, advice});
 });
