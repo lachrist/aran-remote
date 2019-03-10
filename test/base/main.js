@@ -723,8 +723,3 @@ if (o.a !== 2)
   throw new Error("With2");
 } ());
 
-
-
-// EXIT
-console.log('\n\nSuccess!\n\n');
-typeof process !== 'undefined' && process.exit(0);

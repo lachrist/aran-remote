@@ -1,8 +1,9 @@
 
-node $1 --node-port=9000 --alias=meta &
+clear && printf '\e[3J'
+
+node $1 --node-port=9000 --alias=meta --log &
 sleep 2
 node ../lib/node/bin.js --host=9000 --alias=base --meta-alias=meta -- base/main.js
-kill $!
 
 # http-server base/ -p 8000 &
 # PID1=$!

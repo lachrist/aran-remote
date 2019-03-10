@@ -16,12 +16,15 @@ AranRemote(options, (error, aran) => {
     const estree2 = aran.weave(estree1, pointcut, serial);
     return Astring.generate(estree2);
   };
+  let time = null
+  aran.then(() => { aran.orchestrator.close() }, (error) => { throw error });
+  aran.orchestrator.then(() => { console.log("Success "+process.hrtime(time)) }, (error) => { throw error });
+  aran.onterminate = (alias) => { if (alias !== aran.alias) aran.terminate(aran.alias) };
   const noop = async () => {};
   const identity = async (arg0) => arg0;
   const advice = {__proto__:null};
   // Informers //
   [
-    "program",
     "arrival",
     "enter",
     "leave",
@@ -29,6 +32,10 @@ AranRemote(options, (error, aran) => {
     "break",
     "debugger"
   ].forEach((key) => { advice[key] = noop });
+  advice.program = async function (serial) {
+    time = process.hrtime();
+    aran.terminate(this.alias);
+  };
   // Transformers //
   [
     "error",
@@ -52,6 +59,5 @@ AranRemote(options, (error, aran) => {
   advice.apply = async (f, t, xs, s) => await aran.reflect.apply(f, t, xs);
   advice.unary = async (o, x) => await aran.reflect.unary(o, x);
   advice.binary = async (o, x1, x2) => await aran.reflect.binary(o, x1, x2);
-  return ({global, alias, argm}) => ({transform, advice});
+  return ({global, alias, argm}) => ({transform, advice:{__proto__:advice, alias}});
 });
-
