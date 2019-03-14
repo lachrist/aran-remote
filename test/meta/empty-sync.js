@@ -4,7 +4,10 @@ const Acorn = require("acorn");
 const AranRemote = require("../../lib/main.js");
 const Astring = require("astring");
 
-const options = Object.assign(Minimist(process.argv.slice(2)), {synchronous:true});
+const options = Object.assign(Minimist(process.argv.slice(2)), {
+  inline: false,
+  synchronous: true,
+});
 
 AranRemote(options, (error, aran) => {
   if (error)
@@ -16,7 +19,7 @@ AranRemote(options, (error, aran) => {
     const estree2 = aran.weave(estree1, pointcut, serial);
     return Astring.generate(estree2);
   };
-  aran.then(() => { aran.orchestrator.close() }, (error) => { throw error });
+  aran.then(() => { aran.orchestrator.terminate() }, (error) => { throw error });
   aran.orchestrator.then(() => { console.log("Success") }, (error) => { throw error });
   aran.onterminate = (alias) => { if (alias !== aran.alias) aran.terminate(aran.alias) };
   const advice = {

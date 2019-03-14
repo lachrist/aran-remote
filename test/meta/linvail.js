@@ -5,7 +5,10 @@ const AranRemote = require("../../lib/main.js");
 const Astring = require("astring");
 const Linvail = require("linvail");
 
-const options = Object.assign(Minimist(process.argv.slice(2)), {synchronous:true});
+const options = Object.assign(Minimist(process.argv.slice(2)), {
+  inline: false,
+  synchronous: true,
+});
 
 AranRemote(options, (error, aran) => {
   if (error)
@@ -19,10 +22,7 @@ AranRemote(options, (error, aran) => {
     return Astring.generate(estree2);
   };
   let time = null;
-  aran.then(() => {
-    console.log("ASODAKSOASDK");
-    aran.orchestrator.close();
-  }, (error) => { throw error });
+  aran.then(() => { aran.orchestrator.terminate() }, (error) => { throw error });
   aran.orchestrator.then(() => { console.log("Success "+process.hrtime(time)) }, (error) => { throw error });
   aran.onterminate = (alias) => { if (alias !== aran.alias) aran.terminate(aran.alias) };
   let counter = 0;
@@ -39,7 +39,7 @@ AranRemote(options, (error, aran) => {
   // Consumers //
   advice.throw = ($$value, serial) => release(membrane.clean($$value));
   advice.test = ($$value, serial) => {
-    // console.log($$value.meta+" TEST");
+    console.log($$value.meta+" TEST");
     return membrane.clean($$value);
   };
   advice.success = ($$value, serial) => release(membrane.clean($$value));
@@ -51,7 +51,7 @@ AranRemote(options, (error, aran) => {
   advice.error = (value, serial) => membrane.taint(capture(value));
   advice.primitive = (primitive, serial) => {
     const $$primitive = membrane.taint(primitive);
-    // console.log($$primitive.meta+" := "+JSON.stringify(primitive));
+    console.log($$primitive.meta+" := "+JSON.stringify(primitive));
     return $$primitive;
   };
   advice.builtin = (value, name, serial) => membrane.taint(capture(value));
@@ -75,7 +75,7 @@ AranRemote(options, (error, aran) => {
     const value = release(membrane.clean($$value));
     const primitive = aran.reflect.unary(operator, value);
     const $$primitive = membrane.taint(primitive);
-    // console.log($$primitive.meta+" := "+operator+" "+$$value.meta);
+    console.log($$primitive.meta+" := "+operator+" "+$$value.meta);
     return $$primitive;
   };
   advice.binary = (operator, $$value1, $$value2, serial) => {
@@ -83,7 +83,7 @@ AranRemote(options, (error, aran) => {
     const value2 = release(membrane.clean($$value2));
     const primitive = aran.reflect.binary(operator, value1, value2);
     const $$primitive = membrane.taint(primitive);
-    // console.log($$primitive.meta+" := "+$$value1.meta+" "+operator+" "+$$value2.meta);
+    console.log($$primitive.meta+" := "+$$value1.meta+" "+operator+" "+$$value2.meta);
     return $$primitive;
   };
   // Return
