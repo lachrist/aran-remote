@@ -1,7 +1,7 @@
 {
   "name": "aran-remote",
   "description": "Deploy local Aran advices on remote processes",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "author": {
     "name": "Laurent Christophe",
     "email": "lachrist@vub.ac.be"
